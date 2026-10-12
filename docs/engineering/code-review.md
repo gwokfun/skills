@@ -6,6 +6,8 @@ The skill never merges or re-ranks the two axes. The report ends with a worst is
 
 In this fork, Codex projects initialized with `Review input: workspace snapshot` in `docs/agents/workflow.md` use the same two axes on frozen committed and uncommitted task files. Both reviewers read one snapshot; later edits invalidate its findings. Projects without that setting keep the standard fixed-point-to-HEAD input.
 
+If the project also enables spec maintenance, workspace review first checks this fork's optional `project-specs` records and implementation hashes. Verified capability docs must already be reconciled and included in the review scope. Missing or stale records block the review and return to the integration owner; reviewers do not write the missing docs. Disabled maintenance introduces no helper dependency.
+
 ## When to reach for it
 
 Type `/code-review`, or the agent reaches for it automatically when you ask to review a branch, a PR, work in progress, or anything "since X".

@@ -49,23 +49,33 @@ Draft these project outputs from the templates:
 
 Ensure `AGENTS.md` also points to the existing or proposed tracker, domain, and label documents. Put those pointers in the managed block and omit labels when triage is not installed. Fill the role inventory from observed evidence, not the preferred models alone. Note unavailable roles explicitly. Rules A-D remain literal, including rule B on expected TDD RED failures; explain that consequence without inventing an exemption.
 
+### Optional local project specifications
+
+The workflow template defaults to `Project spec maintenance: disabled`. Preserve an existing explicit choice. Enable it only when this initialization request explicitly asks for local spec/change accumulation or the user selects it in this phase; do not enable old projects as a side effect of upgrading templates.
+
+For an enabled proposal, inspect the actually installed `project-specs` skill, invocation metadata and required bundled resources using read-only file inspection. It is a fork-owned beta installed separately from the default plugin. Verify it is model-invoked and identify its actual loaded path when already known; do not launch a bootstrapping CLI or install anything in phase 1. Missing, ambiguous or unsupported loading is a blocker for the enabled proposal. Report how to install from this fork/local source; never claim the canonical upstream installer includes it.
+
+When available, set the workflow line to `enabled` in the reviewed Diff. The existing `AGENTS.md` workflow pointer activates that contract; do not create a duplicate instructions block or migrate global config for it. Reuse existing documentation naming where compatible. Documents under `docs/changes/` and `docs/specs/` are created lazily by actual captures/reconciliations, not empty skeletons during initialization. Explain that the full published spec/tickets are historical content, the tracker owns live status, and current capability docs update only after verification, before internal review/commit.
+
 ### Preserve edits and support reruns
 
-Each template contains one named begin/end block with `version=1`. Keep user text outside the block intact. The state file schema is:
+Each template contains one named begin/end block. AGENTS and subagents use block version 1; workflow uses version 2. Keep user text outside each block intact. The state file schema is:
 
 ```json
 {
   "schema_version": 1,
-  "template_version": 1,
+  "template_version": 2,
   "blocks": {
-    "AGENTS.md": {"block_id": "codex-agents", "sha256": "<digest>"},
-    "docs/agents/subagents.md": {"block_id": "codex-subagents", "sha256": "<digest>"},
-    "docs/agents/workflow.md": {"block_id": "codex-workflow", "sha256": "<digest>"}
+    "AGENTS.md": {"block_id": "codex-agents", "version": 1, "sha256": "<digest>"},
+    "docs/agents/subagents.md": {"block_id": "codex-subagents", "version": 1, "sha256": "<digest>"},
+    "docs/agents/workflow.md": {"block_id": "codex-workflow", "version": 2, "sha256": "<digest>"}
   }
 }
 ```
 
 Replace each digest with SHA-256 of the exact block text including markers, normalized to LF, UTF-8 without a BOM. For hashing, take the begin marker through the end marker, discard any newline immediately after the end marker, then append exactly one LF. Preserve the target file's encoding and line endings when applying edits. On rerun, compare the current block with the recorded digest before proposing a replacement. Identical content is a no-op. User changes inside blocks require a conflict report and reviewed Diff. Missing state, missing/duplicate/altered markers, or unsupported versions must not cause wholesale replacement or another appended block; report the conflict and require explicit resolution. Existing native role definitions are user-owned and never become managed blocks.
+
+Support the previous schema-1/template-1 provenance as a known migration: missing per-block `version` means 1. Verify the recorded version-1 block digest before proposing a workflow upgrade to version 2, preserve outside text and default the new maintenance setting to disabled unless explicitly selected. Show the marker, content and state changes together in the Diff; apply only after that proposal's `go`. Version-2 state records explicit block versions. Other schema/template versions or a version that disagrees with markers remain conflicts. Installing an update never rewrites consumer files.
 
 ### Report and stop
 
@@ -84,5 +94,7 @@ Stop here until the user explicitly says `go` for this displayed initialization 
 Re-read each target and check that it still matches the inspected version. Apply only approved hunks and explicitly approved external operations. Preserve model pins and leave reported override sources untouched. Write provenance only after successful block edits, using the actual generated content's digests; do not record partial edits as complete. Do not commit or push initialization changes unless requested.
 
 Validate TOML with a real parser, then check the actual client's supported configuration/role loading in a fresh session where possible. Check generated pointers, managed-block identity, and a read-only rerun for idempotence. Report saved configuration separately from observed runtime model/effort and permissions. Role instructions and `sandbox_mode` defaults alone do not prove read-only enforcement because live parent overrides can apply. Report unavailable validation instead of declaring success.
+
+When maintenance is enabled, validate skill discovery and complete installed resources in the actual client, then an isolated synthetic capture/reconcile/review handoff if available. Check that reconciliation happens before internal review/commit; documentation alone is not runtime proof. Report authentication, tool invocation or behavioral trial gaps separately. Keep these checks within approved targets or isolated fixtures and do not publish test issues.
 
 Finish with the files applied, preserved pins and remaining conflicts, checks actually run, and how to start the existing skill chain. No user-only skill is invoked automatically.

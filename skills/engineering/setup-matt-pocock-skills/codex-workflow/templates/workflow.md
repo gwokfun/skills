@@ -1,7 +1,8 @@
-<!-- matt-skills:codex-workflow:begin version=1 -->
+<!-- matt-skills:codex-workflow:begin version=2 -->
 # Codex engineering workflow
 
 Review input: workspace snapshot
+Project spec maintenance: disabled
 
 ## Stages
 
@@ -20,6 +21,21 @@ The user starts the first four user-only skills explicitly. Initialization sets 
 Keep the first three stages in the same conversation until tickets exist. Start each implementation from its ticket and spec; use the configured tracker and existing `.scratch/<feature>/` convention for local work. Preserve `implement`'s built-in model-invoked `code-review` and existing commit authority. An additional user-invoked review in a fresh chat can cover the whole feature.
 
 Do not default to `implement-spec`: its parallel worktrees and integration lifecycle require a separate explicit choice and a policy compatible with this project's role restrictions.
+
+## Optional project specification maintenance
+
+This section applies only when the exact setting above is `Project spec maintenance: enabled`. Disabled or absent means the standard flow continues without this helper. Installation alone does not enable it. An enabled project must have this fork's independently installed, model-invoked `project-specs` skill and its resources available; report a missing helper and pause the affected handoff/review instead of silently skipping maintenance. Do not install or alter configuration as a fallback.
+
+Read relevant current `docs/specs/<capability-id>.md` before grilling or planning. Reuse stable change, capability and ticket IDs from the handoff. Keep full published content under tracked `docs/changes/<change-id>/`; the tracker remains authoritative for live task status. Never call a local content snapshot a live issue mirror.
+
+- After `to-spec` actually publishes, call the Skill tool with `project-specs` to capture the complete published spec and known source reference. Record its actual version, observation time and approval basis; seam confirmation alone is not final-body approval. On a local tracker capture the saved source file.
+- After `to-tickets` publishes the approved breakdown, call the Skill tool with `project-specs` to capture each known ticket. If publication is partial, preserve known IDs and resume local captures; do not recreate issues. Stop on truncated or unavailable source bodies.
+- Inside `implement`, after actual behavior verification and BEFORE its internal `code-review` and commit, call the Skill tool with `project-specs` to reconcile the verified capability body and record checks, deviations, implementation hashes and expected document version. Run its `check` command. Then include all returned documentation paths in the task scope and frozen review snapshot, perform `code-review`, and commit only within existing authority. Do not postpone reconciliation until after `implement` returns.
+- After any behavior-changing review fix, reverify, call `project-specs` with a new update ID, check again and regenerate the review snapshot. Never reuse a pass for changed implementation files or docs. Before accepting review, recheck source snapshots against complete current source bodies where necessary; source drift requires an explicit revision decision, not reverse writes to the tracker.
+
+Assign one integration session to each shared capability file. Other ticket sessions and workers produce scoped proposed deltas for that owner to merge serially. Check the expected whole-file digest before writing; concurrent edits require rereading, reconciliation and review. Preserve user edits. Immutable history and new approved revisions keep the original decisions available. The helper records evidence but does not prove that checks ran; the root verifies each claim.
+
+Use actual Git history or already known commit references for traceability rather than inserting a future commit SHA into itself. Do not mark the task Finished while local capture, reconciliation, ownership or evidence remains unresolved. This convention does not grant new tracker, commit, push or global configuration permissions.
 
 ## Before implementation
 

@@ -29,6 +29,8 @@ It writes into the repo you run it in:
 
 The standard setup records project configuration as markdown. The Codex branch separately proposes three user-level defaults (`model`, `model_reasoning_effort`, and `approvals_reviewer`) and project assets: missing native role files, managed blocks in `AGENTS.md`, `docs/agents/subagents.md`, and `docs/agents/workflow.md`, and their provenance in `.codex/workflow-state.json`. Every proposed file is visible before approval. Existing roles pinned to another model and conflicting override sources are preserved and reported.
 
+Optional project-spec maintenance requires this fork's separately installed `project-specs` beta. Ask explicitly to enable local change history and capability docs. Setup checks availability and proposes the workflow setting; it does not install the helper or generate empty spec folders. Existing projects remain disabled unless explicitly enabled. Missing helper availability blocks the enabled proposal.
+
 ## The three decisions
 
 It starts each section with the recommended answer, and skips any question its exploration already answered. Most runs need only two confirmations.
@@ -61,6 +63,8 @@ No. GitHub, GitLab and local markdown under `.scratch/` all ship as ready-made t
 **Do I need to re-run it after updating the skills?**
 
 Re-run standard setup when tracker conventions need updating. Updating this fork's skills does not automatically regenerate consumer Codex configuration. An explicit Codex rerun checks managed-block digests: identical blocks produce no change, user-edited blocks or missing provenance produce a conflict report, and any new proposal needs its own `go`.
+
+The previous version-1 Codex workflow can be proposed for upgrade to version 2 after its recorded digest is verified. Surrounding text is preserved, and the new maintenance switch defaults to disabled. The marker and provenance changes appear in the same reviewed Diff. An edited old block remains a conflict.
 
 **It wrote to `CLAUDE.md`, but I'm on Codex.**
 

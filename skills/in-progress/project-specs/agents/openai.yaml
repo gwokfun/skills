@@ -1,0 +1,3 @@
+interface:
+  display_name: "Project Specs"
+  short_description: "Preserve change records and verified project behavior"

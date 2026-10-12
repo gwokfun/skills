@@ -18,11 +18,13 @@ You invoke this by typing `/ask-matt`; the agent won't reach for it on its own.
 
 ## Prerequisites
 
-The router names skills; it does not install them. Everything it points at has to be installed for the recommendation to be actionable, and it only knows the promoted skills in this repo.
+The router names skills; it does not install them. Everything it points at has to be installed for the recommendation to be actionable. Its map covers promoted skills plus this fork's explicitly listed optional `project-specs` beta; it does not scan arbitrary installed skills.
 
 The tracker-dependent routes (triage, `to-spec`, `to-tickets`, `implement`) assume [setup-matt-pocock-skills](https://aihero.dev/skills-setup-matt-pocock-skills) has already configured an issue tracker in the repo. The router recommends them even before that has happened.
 
 This fork also routes explicit Codex initialization requests to that setup skill. Initialization first proposes a read-only report and Unified Diff, then waits for the user's `go`. Its project workflow documents specify `grill-with-docs → to-spec → to-tickets → implement → code-review`, the allowed roles and architect guards, and an opt-in workspace review before committing. The router recommends the next user-invoked skill without running it; the Codex route uses `implement` per ticket unless you explicitly choose a compatible broader orchestration.
+
+For local accumulation of published specs and tickets, or lasting capability docs, this fork names the independently installed model-invoked `project-specs` helper. It captures history after publication and updates verified capability docs before internal review and commit when the project explicitly enables maintenance. It is outside the default plugin; the router reports a missing helper rather than treating installation as implicit.
 
 ## Flows, not skills
 
