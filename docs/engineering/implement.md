@@ -62,7 +62,7 @@ Not built in. It commits straight to the current branch. Several people find thi
 
 **`code-review` says it cannot see my changes.**
 
-`code-review` reviews `git diff <fixed-point>...HEAD`, which excludes staged and working-tree changes. `implement` runs it before committing, so unless an interim commit already exists there is nothing in that diff to review. Multiple people have reported this and it is unfixed on both sides. Commit first, then review against the point you branched from.
+The standard `code-review` input is `git diff <fixed-point>...HEAD`, which excludes staged and working-tree changes. Since `implement` calls it before committing, an interim commit is needed on that path. This fork's initialized Codex projects can instead opt into a frozen workspace snapshot from the base recorded before implementation. That path includes selected uncommitted task files, validates the reviewed content before an authorized commit, and checks the resulting artifact afterward. `implement` still invokes review and commits; initialization adds project guards without changing that skill's invocation contract.
 
 Separately, some people do not want the review inside the run at all, because an agent reviewing the code it just wrote is biased toward its own solution. Running [code-review](https://aihero.dev/skills-code-review) in a fresh session against a fixed point is a valid alternative. The same bias is why that skill runs its two axes in separate sub-agents.
 

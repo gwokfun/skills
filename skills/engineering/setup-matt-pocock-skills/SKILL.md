@@ -1,6 +1,6 @@
 ---
 name: setup-matt-pocock-skills
-description: "Configure this repo for the engineering skills: set up its issue tracker, triage label vocabulary, and domain doc layout. Run once before first use of the other engineering skills."
+description: "Configure a repo's issue tracker, triage labels, and domain docs, or initialize Codex subagents and the engineering workflow. Run before first use."
 disable-model-invocation: true
 ---
 
@@ -13,6 +13,10 @@ Scaffold the per-repo configuration that the engineering skills assume:
 - **Domain docs**: where `GLOSSARY.md` and ADRs live, and the consumer rules for reading them
 
 This is a prompt-driven skill, not a deterministic script. Explore, present what you found, confirm with the user, then write.
+
+## Codex initialization (fork extension)
+
+When the user explicitly asks to initialize Codex subagents or the Codex workflow, read [the initialization prompt](./codex-workflow/INITIALIZE.md) and follow that branch instead of the Process below. It includes the standard project configuration when needed. Its first phase is entirely read-only and ends with an analysis and Unified Diff; wait for that initialization user's explicit `go` before writing. Otherwise, use the standard Process unchanged.
 
 ## Process
 

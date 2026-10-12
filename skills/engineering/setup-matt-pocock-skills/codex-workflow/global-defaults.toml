@@ -1,0 +1,4 @@
+# Proposed defaults fragment; merge only these keys after initialization approval.
+model = "gpt-6.1-sol"
+model_reasoning_effort = "high"
+approvals_reviewer = "auto_review"

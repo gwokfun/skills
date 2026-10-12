@@ -6,11 +6,15 @@ Those files are the only thing that varies between repos. The skills themselves 
 
 It is a prompt-driven skill, not a deterministic script. It reads your `git remote`, `CLAUDE.md` and `GLOSSARY.md`, proposes what it found, and waits for you to confirm before it writes anything.
 
+This fork adds an explicit Codex initialization branch. It audits configuration and existing [sub-agent](https://www.aihero.dev/ai-coding-dictionary/subagent) definitions, proposes the requested models and workflow guards, and returns an analysis with Unified Diffs. The entire first phase is read-only. Only your `go` for that displayed initialization proposal permits applying it.
+
 ## When to reach for it
 
 You invoke this by typing `/setup-matt-pocock-skills`; the [agent](https://www.aihero.dev/ai-coding-dictionary/agent) won't reach for it on its own. Its metadata marks it non-invokable on purpose, so no other skill can fire it for you.
 
 Reach for it once per repo, before the first use of any other engineering skill. If [triage](https://aihero.dev/skills-triage), [to-spec](https://aihero.dev/skills-to-spec), [to-tickets](https://aihero.dev/skills-to-tickets) or [wayfinder](https://aihero.dev/skills-wayfinder) start guessing where your issues go, or apply labels your tracker doesn't have, this repo has not been set up yet. You can run it in a repo halfway through a project. The skill reads what is already there, so no earlier work is lost.
+
+For this fork's Codex branch, explicitly ask the skill to initialize Codex subagents and the engineering workflow. A normal tracker setup request keeps the standard process. The branch requires this fork's bundled assets; installing the canonical upstream set alone does not include it.
 
 ## Prerequisites
 
@@ -23,7 +27,7 @@ It writes into the repo you run it in:
 | `triage-labels.md` | `docs/agents/`, only when the `triage` skill is installed |
 | An `## Agent skills` block | whichever of `CLAUDE.md` or `AGENTS.md` already exists |
 
-You commit all of it as markdown. There is no user-level or global mode. The config lives in the repo, so every repo gets its own copy.
+The standard setup records project configuration as markdown. The Codex branch separately proposes three user-level defaults (`model`, `model_reasoning_effort`, and `approvals_reviewer`) and project assets: missing native role files, managed blocks in `AGENTS.md`, `docs/agents/subagents.md`, and `docs/agents/workflow.md`, and their provenance in `.codex/workflow-state.json`. Every proposed file is visible before approval. Existing roles pinned to another model and conflicting override sources are preserved and reported.
 
 ## The three decisions
 
@@ -56,26 +60,26 @@ No. GitHub, GitLab and local markdown under `.scratch/` all ship as ready-made t
 
 **Do I need to re-run it after updating the skills?**
 
-The direct answer after v1.1 was yes. The skill's own closing message is softer. It tells you to re-run only to switch trackers or start over. Both are defensible. The seed templates change between versions, so a `docs/agents/issue-tracker.md` from an older release can go out of date against the skills that now read it. If a downstream skill does something different from what the docs describe, re-run setup. It is cheap.
+Re-run standard setup when tracker conventions need updating. Updating this fork's skills does not automatically regenerate consumer Codex configuration. An explicit Codex rerun checks managed-block digests: identical blocks produce no change, user-edited blocks or missing provenance produce a conflict report, and any new proposal needs its own `go`.
 
 **It wrote to `CLAUDE.md`, but I'm on Codex.**
 
-This is a known gap, and still open. The file-selection rule is "edit `CLAUDE.md` if it exists, else `AGENTS.md`". It checks which file exists, not which [harness](https://www.aihero.dev/ai-coding-dictionary/harness) is running. In a repo with a `CLAUDE.md` left over from Claude Code, the skill writes its `## Agent skills` block to a file Codex never reads. Users have two workarounds: move the block to `AGENTS.md` by hand, or keep `AGENTS.md` canonical and make `CLAUDE.md` a one-line pointer at it. If neither file exists, the skill asks you which to create instead of picking one. This has confused people who expected it to decide.
+The standard path retains its Claude-first selection rule. This fork's explicit Codex initialization path targets `AGENTS.md`, creating it when needed even if `CLAUDE.md` exists. It preserves existing content and pointers. The choice depends on the initialization request, not just which [harness](https://www.aihero.dev/ai-coding-dictionary/harness) happens to be running.
 
 **It didn't create my triage labels.**
 
-It doesn't. `docs/agents/triage-labels.md` is a *mapping*: it tells `/triage` which strings in your tracker correspond to the five canonical roles. It does not run `gh label create`. On a fresh GitHub repo the labels do not exist yet, and users have filed this as a bug more than once. Two consequences:
+`docs/agents/triage-labels.md` maps tracker strings to canonical roles. The standard GitHub path also checks for missing mapped labels and creates them after configuration is confirmed. The Codex branch's first phase only reports proposed label creation; external changes require explicit inclusion in the approved proposal. Two limits remain:
 
 - If your tracker already uses the canonical names, the mapping is an identity table and there is nothing to configure. That is the intended common case, not a missing step.
-- This skill does not create [wayfinder](https://aihero.dev/skills-wayfinder)'s `wayfinder:map` and `wayfinder:<type>` labels either, and `gh issue create --label <missing>` fails instead of creating the label. Create them by hand before the first wayfinder run on a GitHub repo.
+- The triage-label step does not provision [wayfinder](https://aihero.dev/skills-wayfinder)'s `wayfinder:map` and `wayfinder:<type>` labels. Follow the tracker's wayfinding operations before publishing a map.
 
 **Can I configure the other skills' behaviour here ([grilling](https://www.aihero.dev/ai-coding-dictionary/grilling) cadence, question format, tone)?**
 
-No. It configures three things: tracker, labels, doc layout. Users have asked to make it the place for per-user preferences. The answer is that skills stay opinionated and take no per-user config. Preferences belong in your `CLAUDE.md` as plain instructions, which every skill already reads.
+The standard path configures tracker, labels, and doc layout. This fork's explicit Codex branch adds subagent and workflow instructions, including handoffs and architect guards. General preferences still belong in your project's instruction file or the invocation.
 
 **Can I keep the config in `~/.claude` instead of committing it to every repo?**
 
-Not today. A user who runs the skills across many repos has an open request for this, but no user-level mode exists. Every repo carries its own `docs/agents/`.
+Tracker and workflow documents remain project-local under `docs/agents/`. The Codex branch can propose global model defaults, but it does not move project workflow state into a shared user directory.
 
 **Isn't it strange to have a skill that configures the other skills?**
 
@@ -88,6 +92,8 @@ One long-standing complaint says yes, in these words: *"having a skill to set up
 - The tracker it proposed matches the remote you use, and the label strings match labels that exist in your tracker.
 - Afterwards, `/to-tickets` publishes without asking you where issues live, and `/triage` applies labels rather than inventing them.
 - Nothing in the skill files themselves changed. If setup edited a `SKILL.md`, something went wrong.
+- A Codex initialization shows the complete report and Diff before any write, lists preserved model pins and unresolved overrides, and waits for your scoped `go`.
+- A Codex rerun preserves surrounding user text and reports changed managed blocks instead of silently replacing them. Saved settings and observed runtime behavior are reported separately.
 
 ## Where it fits
 

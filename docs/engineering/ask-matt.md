@@ -22,6 +22,8 @@ The router names skills; it does not install them. Everything it points at has t
 
 The tracker-dependent routes (triage, `to-spec`, `to-tickets`, `implement`) assume [setup-matt-pocock-skills](https://aihero.dev/skills-setup-matt-pocock-skills) has already configured an issue tracker in the repo. The router recommends them even before that has happened.
 
+This fork also routes explicit Codex initialization requests to that setup skill. Initialization first proposes a read-only report and Unified Diff, then waits for the user's `go`. Its project workflow documents specify `grill-with-docs → to-spec → to-tickets → implement → code-review`, the allowed roles and architect guards, and an opt-in workspace review before committing. The router recommends the next user-invoked skill without running it; the Codex route uses `implement` per ticket unless you explicitly choose a compatible broader orchestration.
+
 ## Flows, not skills
 
 The skill's leading word is **flow**, a path *through* the skills rather than a single skill. When you name your situation, the router places you at a step on a flow. That is a different answer from "here is the skill that matches your keywords". There are five kinds of route, and the skill itself describes them in full:

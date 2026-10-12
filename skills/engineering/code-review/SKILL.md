@@ -12,6 +12,10 @@ Both axes run as **parallel sub-agents** so they don't pollute each other's cont
 
 The issue tracker should have been provided to you. If not, tell the user to run `/setup-matt-pocock-skills`.
 
+## Codex workspace review (fork extension)
+
+If the target project's `docs/agents/workflow.md` explicitly contains `Review input: workspace snapshot`, read [WORKSPACE-REVIEW.md](./WORKSPACE-REVIEW.md) and use its frozen workspace input and allowed Fresh explorer roles for this review. It covers committed and uncommitted task files before `implement` commits. Otherwise follow the standard Process below unchanged.
+
 ## Process
 
 ### 1. Pin the fixed point

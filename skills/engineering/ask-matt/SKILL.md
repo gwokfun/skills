@@ -95,3 +95,5 @@ Off the main flow entirely.
 ## Precondition
 
 **`/setup-matt-pocock-skills`**: run before your first engineering flow to configure the issue tracker, triage labels, and doc layout the other skills assume. Custom issue trackers also work.
+
+In this fork, an explicit Codex initialization request to that skill also proposes native subagent definitions and the `grill-with-docs → to-spec → to-tickets → implement → code-review` workflow. Read the target project's `docs/agents/workflow.md` when present: it supplies handoffs, architect guards, and an opt-in frozen workspace review before committing. Recommend `implement` per ticket for this Codex flow; `implement-spec` needs an explicit separate choice and compatible roles. The first four skills remain user-invoked; recommend the next command without invoking it for the user. Initialization first returns a read-only report and Unified Diff, then waits for the user's `go` for that proposal.

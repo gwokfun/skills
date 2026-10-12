@@ -4,6 +4,8 @@
 
 The skill never merges or re-ranks the two axes. The report ends with a worst issue *per axis* and declines to name a single winner across them. A change can pass one axis and fail the other. Code that follows every convention but implements the wrong thing passes Standards and fails Spec. Code that does exactly what the [ticket](https://www.aihero.dev/ai-coding-dictionary/ticket) asked but breaks the repo's conventions does the reverse. A blended verdict lets the passing axis hide the failing one.
 
+In this fork, Codex projects initialized with `Review input: workspace snapshot` in `docs/agents/workflow.md` use the same two axes on frozen committed and uncommitted task files. Both reviewers read one snapshot; later edits invalidate its findings. Projects without that setting keep the standard fixed-point-to-HEAD input.
+
 ## When to reach for it
 
 Type `/code-review`, or the agent reaches for it automatically when you ask to review a branch, a PR, work in progress, or anything "since X".
@@ -58,7 +60,7 @@ One answer is to remove Claude Code's built-in skills entirely. That saves a lot
 
 **Its sub-agents keep invoking `/code-review` again and spawn more agents.**
 
-This is a known open bug. Several people have reproduced it, in more than one harness. The Standards and Spec prompts do not forbid delegation, so a sub-agent can find the skill again and fan out again. One report reached more than 50 agents. The fix people have applied on forks is one line appended to both sub-agent briefs: "Do not invoke `/code-review` or spawn additional agents: perform this review directly." Some prefer to handle it at the harness level so every skill inherits the guard. Neither is in the shipped skill yet. If you run this unattended, watch the agent count.
+The standard prompts do not forbid further delegation, so this remains a risk on that path. This fork's opt-in Codex workspace path uses Fresh read-only explorer agents and explicitly prohibits invoking this skill again or creating child agents. It respects the project's allowed roles and available slots; an architect boundary review stays separate from these two axes.
 
 **Should I run it in the same [session](https://www.aihero.dev/ai-coding-dictionary/session) that wrote the code?**
 
@@ -70,7 +72,7 @@ Both work, and the skill does not decide for you. Per-ticket keeps each diff sma
 
 **Can I trust the findings?**
 
-Not without checking. Sub-agent output is a hypothesis, not evidence. One team reported a dozen breaking changes that prose-based reviews had missed. The skill combines the two reports as they are, or lightly cleaned. It does not re-verify each claim against the files, so a finding can cite the wrong location or overstate an impact. Read the citation on each finding before you act on it. The skill requires every finding to carry a citation (a standards rule, a smell plus its hunk, or a spec line), and that is what makes the findings checkable.
+Not without checking. Sub-agent output is a hypothesis, not completion proof. On the standard path the skill combines the reports without re-verifying every claim. On the opt-in Codex workspace path the root checks citations against the frozen input and verifies snapshot validity. Both paths still need actual tests and boundary checks; a prose review alone cannot prove the behavior works.
 
 **Why does it find new problems every single time I run it?**
 
@@ -78,7 +80,12 @@ Each fix adds new code to review, and the judgement-call half of the Standards a
 
 **Does it review my uncommitted work?**
 
-No. It diffs `<fixed-point>...HEAD`. The three-dot form measures from the merge-base and excludes staged and working-tree changes. If `implement` has not made an interim commit, the review cannot see the work that is about to go into the next commit. Commit first, then review, then amend or add a fixup.
+| Review input | What it includes |
+| --- | --- |
+| Standard `<fixed-point>...HEAD` | Committed changes from the merge-base; staged and working-tree changes are excluded |
+| This fork's initialized Codex workspace snapshot | Committed, staged, unstaged, deleted, and explicitly selected untracked task files from the agreed immutable base |
+
+The workspace path needs Python 3.11+ and Git. It captures exact task files into a new temporary directory outside the project, without staging or committing. The root identifies task hunks and excluded user changes, checks that staged content matches reviewed content before an authorized commit, and verifies the resulting commit afterward. Symlinks, submodules, custom filters, and other unsupported inputs stop this path with a reported gap. A file removed from the index but retained or recreated in the worktree also needs separate review; the helper refuses that state without altering the index. Without the opt-in setting, commit first to make work visible to the standard review.
 
 ## It's working if
 
@@ -87,6 +94,7 @@ No. It diffs `<fixed-point>...HEAD`. The three-dot form measures from the merge-
 - Every Standards finding names either a rule in one of your repo's files or one of the twelve smells, with the hunk quoted; every Spec finding quotes a line of the spec.
 - The closing summary gives a worst issue per axis and declines to pick an overall winner.
 - With no spec available, the Spec block says so instead of listing requirements it inferred from the code.
+- In an initialized Codex project, both axes identify the same snapshot and include selected uncommitted files. A later edit causes a new capture and review instead of reusing an old pass.
 
 ## Where it fits
 
